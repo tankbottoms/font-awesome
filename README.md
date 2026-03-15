@@ -12,11 +12,35 @@ A neo-brutalist web application for browsing **3,860 icons** from Font Awesome P
 - **Pre-computed embeddings:** 3,860 x 384-dim Float32Array (5.65MB binary blob)
 - **Client-side ONNX inference:** all-MiniLM-L6-v2 quantized model via Transformers.js WASM
 - **Browser model caching:** ONNX model cached in browser storage after first load
+- **JSON API:** keyword search, smart search, icon detail, browse -- with interactive docs
 - **Color controls:** random per-icon colors, color picker, duotone primary/secondary, spectrum cycling
 - **Resizable grid:** floating +/- toolbar for glyph and text size adjustment
 - **Copy formats:** CSS class, Unicode, SVG, HTML snippet
-- **Dark/light theme toggle**
+- **Dark/light theme toggle** (Tokyo Night dark theme)
 - **Zero dependencies at runtime** -- single HTML file with inline CSS/JS and icon data
+
+## Demo
+
+https://github.com/tankbottoms/font-awesome/raw/main/static/videos/font-awesome-demo.mp4
+
+## API
+
+Programmatic access at `https://fontawesome-explorer.atsignhandle.workers.dev/api/`:
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/search?q=arrow&limit=5` | Keyword search (inverted index) |
+| `GET /api/smart?q=weather&limit=5` | Smart search (expanded terms, categories, aliases) |
+| `GET /api/icons?limit=50&offset=0` | Browse/paginate all icons |
+| `GET /api/icon/house` | Single icon detail with all styles |
+| `GET /api/docs` | Interactive API documentation |
+| `GET /api/skill` | Claude Code skill (downloadable) |
+
+**Claude Code skill installer:**
+
+```bash
+curl -sL https://fontawesome-explorer.atsignhandle.workers.dev/api/skill -o ~/.claude/skills/fontawesome.md
+```
 
 ## Tech Stack
 
@@ -25,10 +49,11 @@ A neo-brutalist web application for browsing **3,860 icons** from Font Awesome P
 | Runtime | Bun |
 | Build scripts | TypeScript |
 | Frontend | Vanilla HTML/CSS/JS (single file) |
-| Search (keyword) | Client-side inverted index (FTS5-like) |
+| API | Cloudflare Worker (TypeScript) |
+| Search (keyword) | Client-side + server-side inverted index |
 | Search (semantic) | Transformers.js + all-MiniLM-L6-v2 ONNX |
 | Embeddings | Pre-computed 384-dim Float32Array binary |
-| Deployment | Cloudflare Workers (static assets) |
+| Deployment | Cloudflare Workers (Worker + static assets) |
 | Icons | Font Awesome Pro 6.5.1 + Free 7.2.0 |
 | Design | Neo-brutalist (monospace, hard shadows, rectangular badges) |
 
@@ -42,6 +67,7 @@ bun install
 python3 -m http.server 8765 --directory dist
 
 # Deploy to Cloudflare Workers
+cp -f index.html dist/index.html
 npx wrangler deploy
 ```
 
@@ -49,28 +75,26 @@ npx wrangler deploy
 
 ```
 fontawesome/
-+-- index.html              # Main app (self-contained, ~430KB)
-+-- dist/                   # Deploy directory (Cloudflare Workers assets)
++-- index.html              # Main app (ALL frontend code, ~480KB)
++-- src/
+|   +-- worker.ts           # CF Worker: API routes, search, docs, skill
+|   +-- data/
+|   |   +-- icons.json      # All 3,860 icons (bundled into Worker)
+|   |   +-- search-terms.json  # Extended search terms (354KB)
+|   +-- build/
+|       +-- ingest.ts       # Data pipeline: FA packages --> SQLite
+|       +-- embed.ts        # Embedding pipeline: SQLite --> Float32Array
++-- dist/                   # Deploy target (CF Workers assets, gitignored)
 |   +-- index.html          # Production copy
-|   +-- data/               # Search terms, embeddings
+|   +-- data/               # Embeddings, search terms
 |   +-- downloaded/         # Webfont files (woff2, css)
-+-- data/
-|   +-- embeddings.bin      # Pre-computed icon embeddings (5.65MB)
-|   +-- embedding-names.json # Icon name order for embedding lookup
-|   +-- search-terms.js     # Extended search terms (aliases, categories)
-|   +-- icons.db            # SQLite build artifact
-+-- downloaded/             # Source Font Awesome packages
-|   +-- fontawesome-pro-6.5.1-web/
-|   +-- fontawesome-free-7.2.0-web/
-|   +-- fontawesome-free-6.7.2-web/
-+-- src/build/              # Build-time TypeScript scripts
-|   +-- ingest.ts           # Parse metadata into SQLite
-|   +-- embed.ts            # Generate embeddings binary
-+-- static/screenshots/     # Development screenshots
-+-- mockup.html             # Design mockup reference
-+-- wrangler.toml           # Cloudflare Workers config
-+-- PROMPT.md               # Original implementation plan
++-- data/                   # Build artifacts (gitignored)
++-- docs/                   # Architecture docs, prototype
++-- static/videos/          # Demo videos
++-- wrangler.toml           # CF Workers config
 ```
+
+See [docs/architecture.md](docs/architecture.md) for detailed architecture reference.
 
 ## Search Architecture
 
@@ -82,18 +106,6 @@ fontawesome/
    - Cosine similarity against 3,860 pre-computed icon embeddings
    - Score fusion: `0.7 * FTS + 0.3 * cosine`
 3. Model cached in browser storage after first download (~22MB)
-
-## Deployment
-
-Deployed to Cloudflare Workers with static assets:
-
-```bash
-# Copy latest build to dist
-cp -f index.html dist/index.html
-
-# Deploy
-npx wrangler deploy
-```
 
 ## Configuration
 

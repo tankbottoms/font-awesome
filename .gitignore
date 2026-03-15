@@ -1,24 +1,28 @@
 # Font Awesome Pro proprietary fonts (659MB)
 downloaded/
 
-# Build artifacts
-data/
+# Build artifacts (root data/ only, not src/data/)
+/data/
 
 # Derived from Pro download
 webfonts/
+css/
 
 # Intermediate build data
 icons-data.json
+index.ts
 
 # Development artifacts
 mockup.html
 static/screenshots/
 static/.DS_Store
+static/videos/*.mov
 
 # Internal instructions
 CLAUDE.md
 AGENTS.md
 TODO.md
+PROMPT.md
 
 # Deploy target (contains proprietary fonts)
 dist/

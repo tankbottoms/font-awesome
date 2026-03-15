@@ -929,6 +929,7 @@ body {
     </a>
     <div class="header-actions">
       <a href="https://github.com/tankbottoms/font-awesome" target="_blank" class="header-btn" style="background:#f1f5f9;border-color:#e2e8f0;color:#475569;" title="tankbottoms/font-awesome on GitHub"><i class="fa-brands fa-github"></i> tankbottoms / font-awesome</a>
+      <a href="/api/docs" class="header-btn" style="background:#fef3c7;border-color:#fde68a;color:#92400e;" title="API Documentation"><i class="fa-thin fa-plug"></i> API</a>
       <a href="https://github.com/tankbottoms/font-awesome/fork" target="_blank" class="header-btn" style="background:#d1fae5;border-color:#a7f3d0;color:#065f46;" title="Fork this repository"><i class="fa-thin fa-code-fork"></i> Fork</a>
       <button class="header-btn" style="background:#e0f2fe;border-color:#bae6fd;color:#0369a1;" title="Build &amp; Search Documentation" onclick="openDocs()"><i class="fa-thin fa-book"></i> Docs</button>
       <button class="header-btn" style="background:#ede9fe;border-color:#ddd6fe;color:#5b21b6;" title="Toggle light/dark theme" onclick="toggleTheme()"><i class="fa-thin fa-moon" id="theme-icon"></i> Theme</button>
@@ -1397,6 +1398,16 @@ const TAB_PASTELS = {
   ss:  'background:#fff8e1;border-color:#ffecb3;color:#ff6f00;',
   b:   'background:#fbe9e7;border-color:#ffccbc;color:#bf360c;',
 };
+// Restore persisted theme
+try {
+  const savedTheme = localStorage.getItem('fa-explorer-theme');
+  if (savedTheme === 'dark' || savedTheme === 'light') {
+    document.documentElement.dataset.theme = savedTheme;
+    const ti = document.getElementById('theme-icon');
+    if (ti) ti.className = savedTheme === 'dark' ? 'fa-thin fa-sun' : 'fa-thin fa-moon';
+  }
+} catch(e) {}
+
 buildTabs();
 buildSearchIndex();
 renderGrid();
@@ -1980,8 +1991,10 @@ function closeAbout() {
 
 function toggleTheme() {
   const isDark = document.documentElement.dataset.theme === 'dark';
-  document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  document.documentElement.dataset.theme = newTheme;
   document.getElementById('theme-icon').className = isDark ? 'fa-thin fa-moon' : 'fa-thin fa-sun';
+  try { localStorage.setItem('fa-explorer-theme', newTheme); } catch(e) {}
 }
 
 function openDocs() {
