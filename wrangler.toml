@@ -1,0 +1,11 @@
+name = "fontawesome-explorer"
+compatibility_date = "2026-03-15"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[observability.logs]
+enabled = true
+invocation_logs = true
+
+[assets]
+directory = "dist"

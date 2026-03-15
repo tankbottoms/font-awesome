@@ -1,0 +1,37 @@
+# Font Awesome Pro proprietary fonts (659MB)
+downloaded/
+
+# Build artifacts
+data/
+
+# Derived from Pro download
+webfonts/
+
+# Intermediate build data
+icons-data.json
+
+# Development artifacts
+mockup.html
+static/screenshots/
+static/.DS_Store
+
+# Internal instructions
+CLAUDE.md
+AGENTS.md
+TODO.md
+
+# Deploy target (contains proprietary fonts)
+dist/
+
+# ONNX models
+models/
+
+# Playwright CLI
+.playwright-cli/
+
+# Environment
+.env
+node_modules/
+.wrangler/
+.claude/
+.DS_Store
