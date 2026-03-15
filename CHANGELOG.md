@@ -1,5 +1,29 @@
 # Changelog
 
+## 2026-03-15 (v1.2.0)
+
+### Added
+- **JSON API** with 6 endpoints: /api/search, /api/smart, /api/icons, /api/icon/:name, /api/docs, /api/skill
+- **Interactive API docs** at /api/docs with try-me panels, theme-aware (matches landing page dark/light)
+- **Claude Code skill** downloadable from /api/skill with one-line installer
+- **Smart search endpoint** using expanded terms corpus (categories, aliases, synonyms) for broader results
+- API badge in header navigation bar
+- Version field in all API JSON responses
+- Architecture documentation in docs/architecture.md
+- Theme persistence via localStorage (dark/light preference saved across pages)
+- Compressed mp4 demo video (3MB vs 34MB mov)
+
+### Changed
+- Converted from static-only to Worker + static assets hybrid (ASSETS binding)
+- Moved mockup.html to docs/prototype.html
+- Updated README with API section, project structure, architecture doc link
+- Cleaned up tracked files: removed css/, index.ts, .mov from git
+
+### Removed
+- PROMPT.md scrubbed from git history
+- Dead index.ts placeholder
+- Redundant css/ directory (derived from downloaded/)
+
 ## 2026-03-15 (v1.1.0)
 
 ### Added
