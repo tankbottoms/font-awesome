@@ -415,7 +415,8 @@ function handleDocs(): Response {
   [data-theme='dark'] .download-btn:hover { background: #3a2a50; }
   .download-btn i { margin-right: 4px; }
 
-  .back-link { display: inline-block; margin-bottom: 1rem; font-size: 0.85rem; }
+  .back-link { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 1rem; font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.65rem; border: 1px solid var(--color-border); background: var(--color-bg-alt); color: var(--color-text); text-decoration: none; text-transform: uppercase; letter-spacing: 0.03em; font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace; }
+  .back-link:hover { background: var(--color-hover-bg); border-color: #000; }
   .schema-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
   .schema-table th, .schema-table td { border: 1px solid var(--color-border); padding: 4px 8px; text-align: left; }
   .schema-table th { background: var(--color-bg-alt); }

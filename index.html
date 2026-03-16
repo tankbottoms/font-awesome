@@ -958,6 +958,15 @@ body {
   .search-container { order: 3; }
   .fixed-top, .grid-container { max-width: 100vw; }
 
+  /* Header: title centered, buttons on two rows */
+  .site-header { border-bottom: none; padding-bottom: 0; }
+  .site-header::after {
+    content: '';
+    display: block;
+    height: 2px;
+    background: var(--color-border-dark);
+    margin: var(--spacing-sm) 15px 0;
+  }
   .header-inner {
     flex-wrap: wrap;
     justify-content: center;
@@ -979,27 +988,115 @@ body {
     font-size: 0.65rem;
     padding: 0.25rem 0.5rem;
   }
+  /* GitHub + Fork on row 1, API/Docs/Theme/About on row 2 */
+  .header-actions { gap: 4px 4px; }
+  .header-btn:nth-child(1),
+  .header-btn:nth-child(2) { order: 1; }
+  .header-btn:nth-child(3) { order: 2; }
+  .header-btn:nth-child(4) { order: 2; }
+  .header-btn:nth-child(5) { order: 2; }
+  .header-btn:nth-child(6) { order: 2; }
+  /* Force row break after Fork (2nd button) */
+  .header-actions::after {
+    content: '';
+    width: 100%;
+    order: 1;
+  }
 
-  .tabs-container, .search-container, .grid-container { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
-  .icon-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 4px; }
-  .icon-glyph { font-size: 1.5rem; height: 1.75rem; }
-  .style-tabs { overflow-x: auto; flex-wrap: nowrap; }
+  /* Tabs: horizontal scroll with fade caret hint */
+  .tabs-container { padding: 0 var(--spacing-md); position: relative; }
+  .style-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: var(--spacing-sm);
+  }
+  .style-tabs::-webkit-scrollbar { display: none; }
+  .tabs-container::after {
+    content: '\f105';
+    font-family: 'Font Awesome 6 Pro';
+    font-weight: 100;
+    position: absolute;
+    right: var(--spacing-md);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem;
+    color: var(--color-text-muted);
+    pointer-events: none;
+    opacity: 0.6;
+    z-index: 2;
+  }
+  .tabs-container.scrolled-end::after { display: none; }
 
-  .search-bar { flex-wrap: wrap; }
-  .search-input { flex: 1 1 100%; border-bottom: 1px solid var(--color-border); }
+  /* Search: lightbox with padding */
+  .search-container { padding: 0 var(--spacing-md); }
+  .search-bar {
+    flex-wrap: wrap;
+    background: var(--color-bg-alt);
+    border: 2px solid var(--color-border-dark);
+    padding: var(--spacing-xs);
+    gap: 0;
+  }
+  /* Top row: magnifying glass + input */
+  .search-icon { padding: var(--spacing-xs); }
+  .search-input {
+    flex: 1 1 0;
+    min-width: 0;
+    border-bottom: none;
+    padding: var(--spacing-xs);
+    font-size: 0.85rem;
+  }
   .search-hint { display: none; }
+  /* Bottom row: controls spread evenly */
   .smart-toggle,
   .color-section,
-  .random-duo-btn { border-left: none; border-top: none; }
+  .random-duo-btn {
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    flex: 1 1 auto;
+    justify-content: center;
+    text-align: center;
+    padding: var(--spacing-xs) 2px;
+  }
 
+  .grid-container { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
+  /* 4-column grid on mobile */
+  .icon-grid { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+  .icon-glyph { font-size: 1.5rem; height: 1.75rem; }
+
+  /* Detail: styles on 2 rows, auto 2x zoom */
   .detail-panel { width: 95vw; max-height: 90vh; margin: 0 auto; }
+  .style-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xs);
+    justify-items: center;
+  }
+
+  /* Toolbar + back-to-top: no black borders */
+  .bottom-toolbar {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    gap: var(--spacing-xs);
+  }
+  .toolbar-btn {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+  }
+  .back-to-top {
+    border: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+  }
 }
 
 @media (max-width: 480px) {
-  .icon-grid { grid-template-columns: repeat(3, 1fr); }
+  .icon-grid { grid-template-columns: repeat(4, 1fr); }
   .site-title-main { font-size: 1rem; }
 }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
 </head>
 <body>
 
@@ -1013,8 +1110,8 @@ body {
     </a>
     <div class="header-actions">
       <a href="https://github.com/tankbottoms/font-awesome" target="_blank" class="header-btn" style="background:#f1f5f9;border-color:#e2e8f0;color:#475569;" title="tankbottoms/font-awesome on GitHub"><i class="fa-brands fa-github"></i> tankbottoms / font-awesome</a>
-      <a href="/api/docs" class="header-btn" style="background:#fef3c7;border-color:#fde68a;color:#92400e;" title="API Documentation"><i class="fa-thin fa-plug"></i> API</a>
       <a href="https://github.com/tankbottoms/font-awesome/fork" target="_blank" class="header-btn" style="background:#d1fae5;border-color:#a7f3d0;color:#065f46;" title="Fork this repository"><i class="fa-thin fa-code-fork"></i> Fork</a>
+      <a href="/api/docs" class="header-btn" style="background:#fef3c7;border-color:#fde68a;color:#92400e;" title="API Documentation"><i class="fa-thin fa-plug"></i> API</a>
       <button class="header-btn" style="background:#e0f2fe;border-color:#bae6fd;color:#0369a1;" title="Build &amp; Search Documentation" onclick="openDocs()"><i class="fa-thin fa-book"></i> Docs</button>
       <button class="header-btn" style="background:#ede9fe;border-color:#ddd6fe;color:#5b21b6;" title="Toggle light/dark theme" onclick="toggleTheme()"><i class="fa-thin fa-moon" id="theme-icon"></i> Theme</button>
       <button class="header-btn" style="background:#fef3c7;border-color:#fde68a;color:#92400e;" title="About this explorer" onclick="openAbout()"><i class="fa-thin fa-circle-info"></i> About</button>
@@ -1190,6 +1287,10 @@ body {
           <tr><td>Search</td><td>FTS5 (keyword) + all-MiniLM-L6-v2 ONNX (semantic)</td></tr>
           <tr><td>Deploy</td><td>Cloudflare Workers</td></tr>
         </table>
+      </div>
+      <div class="detail-section">
+        <h4>Design Intent</h4>
+        <p style="font-size:0.8rem;line-height:1.6;">This explorer is a reference template for building minimal, fast, in-browser search tools. The architecture demonstrates hybrid search: <strong>FTS5 keyword search</strong> for instant prefix/exact matching at sub-millisecond latency, combined with <strong>semantic embedding search</strong> (all-MiniLM-L6-v2 ONNX) for conceptual queries -- all running entirely client-side with no backend API required for search. The single-file approach (inline CSS, JS, and data) keeps deployment trivial while the neo-brutalist design system keeps the UI focused on content over chrome.</p>
       </div>
       <div class="detail-section">
         <h4>Benchmark</h4>
@@ -1428,6 +1529,144 @@ sources         2 rows  (pro-6.5.1, free-7.2.0)</div>
 
 <script src="data/search-terms.js"></script>
 <script>
+// ================================================================
+// HAPTICS ENGINE (ported from atsignhandle.xyz)
+// ================================================================
+const _isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const _isAndroid = /Android/.test(navigator.userAgent);
+let _hapticLabel = null, _hapticEl = null;
+let _hapticsEnabled = true;
+
+const HAPTIC_PRESETS = {
+  success:   [{ duration: 60, intensity: 0.7 }, { duration: 80, intensity: 1.0, delay: 40 }, { duration: 40, intensity: 0.5, delay: 40 }],
+  nudge:     [{ duration: 120, intensity: 1.0 }, { duration: 80, intensity: 0.6, delay: 60 }, { duration: 60, intensity: 0.3, delay: 40 }],
+  error:     [{ duration: 60, intensity: 1.0 }, { duration: 60, intensity: 1.0, delay: 30 }, { duration: 60, intensity: 1.0, delay: 30 }, { duration: 80, intensity: 0.8, delay: 30 }],
+  light:     [{ duration: 30, intensity: 0.5 }, { duration: 20, intensity: 0.3, delay: 30 }],
+  medium:    [{ duration: 50, intensity: 0.8 }, { duration: 40, intensity: 0.6, delay: 40 }],
+  selection: [{ duration: 15, intensity: 0.5 }, { duration: 15, intensity: 0.3, delay: 20 }],
+  pulse:     [{ duration: 20, intensity: 0.4 }],
+};
+
+const TOGGLE_MIN = 16, TOGGLE_MAX = 184;
+
+function ensureHapticElement() {
+  if (_hapticLabel) return;
+  const label = document.createElement('label');
+  label.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0.01;overflow:hidden;z-index:-1;';
+  const cb = document.createElement('input');
+  cb.type = 'checkbox';
+  cb.setAttribute('switch', '');
+  cb.style.cssText = 'position:absolute;width:1px;height:1px;opacity:0.01;appearance:auto;';
+  label.appendChild(cb);
+  document.body.appendChild(label);
+  _hapticLabel = label;
+  _hapticEl = cb;
+}
+
+function runIOSHapticPattern(vibrations) {
+  ensureHapticElement();
+  const phases = [];
+  let offset = 0;
+  for (const v of vibrations) {
+    const delay = v.delay || 0;
+    const intensity = Math.max(0, Math.min(1, v.intensity ?? 0.5));
+    const duration = v.duration || 50;
+    if (delay > 0) { phases.push({ start: offset, end: offset + delay, type: 'pause' }); offset += delay; }
+    phases.push({ start: offset, end: offset + duration, type: 'vibrate', intensity });
+    offset += duration;
+  }
+  const totalDuration = offset;
+  let startTime = null, lastToggleTime = 0;
+  function run(time) {
+    if (!startTime) startTime = time;
+    const elapsed = time - startTime;
+    if (elapsed >= totalDuration) return;
+    const phase = phases.find(p => elapsed >= p.start && elapsed < p.end);
+    if (phase && phase.type === 'vibrate') {
+      const interval = TOGGLE_MIN + TOGGLE_MAX * (1 - phase.intensity);
+      if (time - lastToggleTime >= interval || !lastToggleTime) { _hapticLabel.click(); lastToggleTime = time; }
+    }
+    requestAnimationFrame(run);
+  }
+  _hapticLabel.click();
+  lastToggleTime = performance.now();
+  requestAnimationFrame(run);
+}
+
+function toVibratePattern(vibrations) {
+  const PWM = 20, result = [];
+  for (const v of vibrations) {
+    const intensity = Math.max(0, Math.min(1, v.intensity ?? 0.5));
+    const delay = v.delay || 0;
+    if (delay > 0) { result.length > 0 && result.length % 2 === 0 ? result[result.length - 1] += delay : result.push(result.length === 0 ? 0 : delay, delay); }
+    if (intensity >= 1) { result.push(v.duration); result.push(0); continue; }
+    if (intensity <= 0) continue;
+    const on = Math.max(1, Math.round(PWM * intensity)), off = PWM - on;
+    let rem = v.duration;
+    while (rem >= PWM) { result.push(on, off); rem -= PWM; }
+    if (rem > 0) { const ro = Math.max(1, Math.round(rem * intensity)); result.push(ro); const roff = rem - ro; if (roff > 0) result.push(roff); }
+  }
+  return result;
+}
+
+function haptic(preset) {
+  if (!_hapticsEnabled) return;
+  const pattern = typeof preset === 'string' ? HAPTIC_PRESETS[preset] : preset;
+  if (!pattern) return;
+  if (navigator.vibrate) navigator.vibrate(toVibratePattern(pattern));
+  if (_isIOS) runIOSHapticPattern(pattern);
+}
+
+// Pulse haptics during an operation (returns stop function)
+function hapticPulse(presetName, intervalMs) {
+  if (!_hapticsEnabled) return () => {};
+  const iv = setInterval(() => haptic(presetName || 'pulse'), intervalMs || 150);
+  return () => clearInterval(iv);
+}
+
+// ================================================================
+// CONFETTI ENGINE (canvas-confetti via CDN)
+// ================================================================
+let _confettiTimers = [], _emojiShapes = null;
+const _confettiColors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff922b', '#cc5de8', '#20c997', '#ff6b9d'];
+
+function getEmojiShapes() {
+  if (_emojiShapes) return _emojiShapes;
+  if (typeof confetti === 'undefined' || !confetti.shapeFromText) return null;
+  _emojiShapes = {
+    sparkle: confetti.shapeFromText({ text: '\u2728', scalar: 3.5 }),
+    party: confetti.shapeFromText({ text: '\uD83C\uDF89', scalar: 3.5 }),
+  };
+  return _emojiShapes;
+}
+
+function shootConfetti(durationMs) {
+  if (typeof confetti === 'undefined') return;
+  _confettiTimers.forEach(t => { clearInterval(t); clearTimeout(t); });
+  _confettiTimers = [];
+  const dur = durationMs || 3000;
+  const start = Date.now();
+  const t1 = setInterval(() => {
+    if (Date.now() - start > dur) { clearInterval(t1); return; }
+    confetti({ particleCount: 10, angle: 55, spread: 60, startVelocity: 50, origin: { x: 0, y: 0.65 }, colors: _confettiColors, ticks: 200, gravity: 0.8, scalar: 1.1 });
+    confetti({ particleCount: 10, angle: 125, spread: 60, startVelocity: 50, origin: { x: 1, y: 0.65 }, colors: _confettiColors, ticks: 200, gravity: 0.8, scalar: 1.1 });
+  }, 200);
+  _confettiTimers.push(t1);
+  const t2 = setTimeout(() => {
+    const shapes = getEmojiShapes();
+    if (!shapes) return;
+    const t3 = setInterval(() => {
+      if (Date.now() - start > dur) { clearInterval(t3); return; }
+      confetti({ particleCount: 2, angle: 90, spread: 80, startVelocity: 35, origin: { x: 0.5, y: 1 }, shapes: [shapes.sparkle, shapes.party], scalar: 3.5, ticks: 200, gravity: 0.5, flat: true });
+    }, 300);
+    _confettiTimers.push(t3);
+  }, dur * 0.5);
+  _confettiTimers.push(t2);
+  const t4 = setTimeout(() => { _confettiTimers.forEach(t => { clearInterval(t); clearTimeout(t); }); _confettiTimers = []; }, dur + 200);
+  _confettiTimers.push(t4);
+}
+
 // Style mapping
 const STYLE_MAP = {
   s:'solid', r:'regular', l:'light', t:'thin',
@@ -1528,6 +1767,19 @@ function checkShowIntro() {
   }
 }
 checkShowIntro();
+
+// Tabs scroll caret: hide when scrolled to end
+(function() {
+  const tabsEl = document.querySelector('.style-tabs');
+  const container = document.querySelector('.tabs-container');
+  if (!tabsEl || !container) return;
+  function checkScroll() {
+    const atEnd = tabsEl.scrollLeft + tabsEl.clientWidth >= tabsEl.scrollWidth - 10;
+    container.classList.toggle('scrolled-end', atEnd);
+  }
+  tabsEl.addEventListener('scroll', checkScroll, { passive: true });
+  checkScroll();
+})();
 
 function buildTabs() {
   const container = document.getElementById('style-tabs');
@@ -1911,10 +2163,12 @@ function setTab(tabId, el) {
 function filterIcons() {
   const input = document.getElementById('search-input');
   currentFilter = input.value.toLowerCase().trim();
+  if (currentFilter) haptic('pulse');
 
   if (smartMode && currentFilter && embeddingData && embedder) {
     // Async hybrid search
     hybridSearch(currentFilter).then(results => {
+      haptic('selection');
       const grid = document.getElementById('icon-grid');
       const status = document.getElementById('grid-status');
 
@@ -1963,6 +2217,7 @@ function filterIcons() {
 }
 
 function openDetail(icon) {
+  haptic('medium');
   document.getElementById('detail-name').textContent = icon.n;
   document.getElementById('detail-label').textContent = icon.L;
 
@@ -1987,11 +2242,24 @@ function openDetail(icon) {
     .filter(s => icon.S.includes(s))
     .map(s => {
       const cls = styleToClass(s, icon.n);
-      return `<div class="style-strip-item">
+      return `<div class="style-strip-item" data-cls="${cls}" style="cursor:pointer;">
         <i class="${cls}"></i>
         <span class="style-strip-label">${STYLE_LABELS[s]}</span>
       </div>`;
     }).join('');
+
+  // Tap style variant to swap hero glyph
+  stylesEl.querySelectorAll('.style-strip-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const cls = item.dataset.cls;
+      const heroEl = document.getElementById('detail-hero');
+      heroEl.innerHTML = `<i class="${cls}"></i>`;
+      heroEl.style.fontSize = '8rem';
+      document.getElementById('detail-zoom-btn').dataset.zoomed = '1';
+      haptic('selection');
+      randomizeDetailColors();
+    });
+  });
 
   // Copy formats — build via DOM to avoid innerHTML escaping issues
   const defaultPrefix = icon.B ? 'fa-brands' : 'fa-solid';
@@ -2043,6 +2311,13 @@ function openDetail(icon) {
 
   document.getElementById('detail-overlay').classList.add('open');
   randomizeDetailColors();
+
+  // Auto 2x zoom on mobile
+  if (window.innerWidth <= 768) {
+    const heroEl = document.getElementById('detail-hero');
+    heroEl.style.fontSize = '8rem';
+    document.getElementById('detail-zoom-btn').dataset.zoomed = '1';
+  }
 }
 
 function closeDetail() {
@@ -2101,7 +2376,11 @@ function copyIcon(name, isBrand) {
 }
 
 function copyText(text, msg) {
-  navigator.clipboard.writeText(text).then(() => showToast(msg));
+  navigator.clipboard.writeText(text).then(() => {
+    showToast(msg);
+    haptic('success');
+    shootConfetti(3000);
+  });
 }
 
 function showToast(msg) {
@@ -2113,6 +2392,7 @@ function showToast(msg) {
 }
 
 function openAbout() {
+  haptic('light');
   document.getElementById('about-overlay').classList.add('open');
 }
 
@@ -2121,6 +2401,7 @@ function closeAbout() {
 }
 
 function toggleTheme() {
+  haptic('selection');
   const isDark = document.documentElement.dataset.theme === 'dark';
   const newTheme = isDark ? 'light' : 'dark';
   document.documentElement.dataset.theme = newTheme;
@@ -2129,6 +2410,7 @@ function toggleTheme() {
 }
 
 function openDocs() {
+  haptic('light');
   document.getElementById('docs-overlay').classList.add('open');
 }
 
@@ -2348,9 +2630,12 @@ function toggleCycleColors() {
     cancelAnimationFrame(cycleInterval);
     cycleInterval = null;
     btn.style.color = '';
+    if (window._cycleHapticStop) { window._cycleHapticStop(); window._cycleHapticStop = null; }
     return;
   }
   btn.style.color = 'var(--accent-duotone)';
+  haptic('light');
+  window._cycleHapticStop = hapticPulse('pulse', 500);
   cycleHueOffset = 0;
   cycleLastTs = 0;
   // If icons don't have base hues yet, randomize first
@@ -2409,6 +2694,7 @@ function toggleCycleColors() {
 let gridScale = 1;
 
 function adjustSize(delta) {
+  haptic('selection');
   gridScale = Math.max(0.5, Math.min(2, gridScale + delta));
   const grid = document.getElementById('icon-grid');
   const minPx = Math.round(140 * gridScale);
