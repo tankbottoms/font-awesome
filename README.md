@@ -21,8 +21,18 @@ A neo-brutalist web application for browsing **3,860 icons** from Font Awesome P
 
 ## Demo
 
+### Desktop
+
 <div align="center">
   <video src="https://github.com/user-attachments/assets/e05f8a8d-7462-4413-9ca5-6d24c8745b6a" width="800" controls></video>
+</div>
+
+---
+
+### Mobile
+
+<div align="center">
+  <video src="https://github.com/tankbottoms/font-awesome/issues/2#issue-4083956638" width="800" controls></video>
 </div>
 
 ## API
