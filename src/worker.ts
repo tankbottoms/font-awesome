@@ -674,9 +674,38 @@ curl -sL https://fontawesome-explorer.atsignhandle.workers.dev/api/skill -o ~/.c
   });
 }
 
+async function handleHfProxy(url: URL, request: Request): Promise<Response> {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        ...corsHeaders(),
+        'Access-Control-Max-Age': '86400',
+      },
+    });
+  }
+
+  const hfPath = url.pathname.slice('/hf-proxy/'.length);
+  if (!hfPath) return jsonResponse({ error: 'Missing path' }, 400);
+
+  const hfUrl = `https://huggingface.co/${hfPath}`;
+  const resp = await fetch(hfUrl, { redirect: 'follow' });
+  const headers = new Headers(resp.headers);
+  headers.set('Access-Control-Allow-Origin', '*');
+  headers.set('Access-Control-Expose-Headers', '*');
+  headers.set('Cache-Control', 'public, max-age=604800, immutable');
+
+  return new Response(resp.body, { status: resp.status, headers });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    // HuggingFace model proxy (CORS-safe)
+    if (url.pathname.startsWith('/hf-proxy/')) {
+      return handleHfProxy(url, request);
+    }
 
     if (!url.pathname.startsWith('/api/')) {
       return env.ASSETS.fetch(request);

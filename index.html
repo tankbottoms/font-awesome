@@ -1549,6 +1549,7 @@ async function loadEmbedder() {
     env.useBrowserCache = true;
     env.cacheDir = 'fa-explorer-models';
     env.allowLocalModels = false;
+    env.remoteHost = location.origin + '/hf-proxy';
     let fromCache = true;
     const startTime = performance.now();
     let downloadStartTime = 0;
