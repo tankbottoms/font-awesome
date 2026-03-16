@@ -1056,11 +1056,21 @@ body {
     min-width: 0;
     border-bottom: 1px solid var(--color-border);
     padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.85rem;
+    font-size: 16px; /* prevents iOS auto-zoom on focus */
     order: -1;
   }
   .search-icon { order: -2; }
-  .search-hint { display: none; }
+  /* Show / hint as a small badge on mobile */
+  .search-hint {
+    display: inline-flex;
+    align-items: center;
+    order: -1;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--spacing-xs) 4px;
+    flex: 0 0 auto;
+  }
+  .search-hint .hint-text { display: none; }
   /* Row 2: uniform badge controls */
   .smart-toggle,
   .color-section,
@@ -2254,12 +2264,12 @@ function openDetail(icon) {
   document.getElementById('detail-name').textContent = icon.n;
   document.getElementById('detail-label').textContent = icon.L;
 
-  // Hero glyph
+  // Hero glyph -- default 2x zoom
   const heroClass = getDisplayClass(icon);
   const heroEl = document.getElementById('detail-hero');
   heroEl.innerHTML = `<i class="${heroClass}"></i>`;
-  heroEl.style.fontSize = '4rem';
-  document.getElementById('detail-zoom-btn').dataset.zoomed = '0';
+  heroEl.style.fontSize = '8rem';
+  document.getElementById('detail-zoom-btn').dataset.zoomed = '1';
 
   // Badges
   const tierCls = icon.T === 'p' ? 'badge-pro' : 'badge-free';
@@ -2344,13 +2354,6 @@ function openDetail(icon) {
 
   document.getElementById('detail-overlay').classList.add('open');
   randomizeDetailColors();
-
-  // Auto 2x zoom on mobile
-  if (window.innerWidth <= 768) {
-    const heroEl = document.getElementById('detail-hero');
-    heroEl.style.fontSize = '8rem';
-    document.getElementById('detail-zoom-btn').dataset.zoomed = '1';
-  }
 }
 
 function closeDetail() {
@@ -2372,6 +2375,21 @@ function toggleDetailZoom() {
   }
 }
 
+function applyDetailColors(primary, duo) {
+  // Apply to style strip AND hero icon
+  document.querySelectorAll('#detail-styles .style-strip-item i').forEach(icon => {
+    icon.style.color = primary;
+    icon.style.setProperty('--fa-primary-color', primary);
+    icon.style.setProperty('--fa-secondary-color', duo);
+  });
+  const heroIcon = document.querySelector('#detail-hero i');
+  if (heroIcon) {
+    heroIcon.style.color = primary;
+    heroIcon.style.setProperty('--fa-primary-color', primary);
+    heroIcon.style.setProperty('--fa-secondary-color', duo);
+  }
+}
+
 function updateDetailColors(explicitDuo) {
   const primary = document.getElementById('detail-color').value;
   const duoEl = document.getElementById('detail-duo');
@@ -2379,12 +2397,7 @@ function updateDetailColors(explicitDuo) {
     const [h, s, l] = hexToHSL(primary);
     duoEl.value = hslToHex(h, Math.max(s - 10, 20), Math.min(l + 25, 85));
   }
-  const duo = duoEl.value;
-  document.querySelectorAll('#detail-styles .style-strip-item i').forEach(icon => {
-    icon.style.color = primary;
-    icon.style.setProperty('--fa-primary-color', primary);
-    icon.style.setProperty('--fa-secondary-color', duo);
-  });
+  applyDetailColors(primary, duoEl.value);
 }
 
 function randomizeDetailColors() {
@@ -2395,11 +2408,7 @@ function randomizeDetailColors() {
   const duo = hslToHex(h, Math.max(s - 10, 20), Math.min(l + 25, 85));
   document.getElementById('detail-color').value = primary;
   document.getElementById('detail-duo').value = duo;
-  document.querySelectorAll('#detail-styles .style-strip-item i').forEach(icon => {
-    icon.style.color = primary;
-    icon.style.setProperty('--fa-primary-color', primary);
-    icon.style.setProperty('--fa-secondary-color', duo);
-  });
+  applyDetailColors(primary, duo);
 }
 
 function copyIcon(name, isBrand) {
