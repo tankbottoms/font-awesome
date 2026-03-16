@@ -1,8 +1,14 @@
 {
   "name": "fontawesome",
-  "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "bunx http-server dist -p 8765 -c-1 --cors",
+    "ingest": "bun run src/build/ingest.ts",
+    "embed": "bun run src/build/embed.ts",
+    "benchmark": "bun run src/build/benchmark.ts",
+    "deploy": "cp -f index.html dist/index.html && npx wrangler deploy"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },

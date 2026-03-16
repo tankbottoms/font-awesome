@@ -107,12 +107,11 @@ Programmatic access at `https://fontawesome-explorer.atsignhandle.workers.dev/ap
 # Install dependencies
 bun install
 
-# Serve locally
-python3 -m http.server 8765 --directory dist
+# Serve locally (http://localhost:8765)
+bun run dev
 
 # Deploy to Cloudflare Workers
-cp -f index.html dist/index.html
-npx wrangler deploy
+bun run deploy
 ```
 
 ## Project Structure

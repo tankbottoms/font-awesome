@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Font Awesome</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'><path fill='%233498db' d='M448 48V384c-63 23-82 32-128 32-46 0-64-16-128-16-38 0-66 8-96 16V64c30-8 58-16 96-16 64 0 82 16 128 16 46 0 65-9 128-32zM0 0h32V512H0z'/></svg>">
 <link rel="manifest" href="/manifest.json">
@@ -63,16 +63,26 @@
   --color-bg: #1a1b26;
   --color-bg-secondary: #24283b;
   --color-bg-alt: #1f2335;
-  --color-text: #c0caf5;
-  --color-text-muted: #565f89;
-  --color-border: #3b4261;
-  --color-border-light: #3b4261;
-  --color-border-dark: #7aa2f7;
+  --color-text: #dce0f8;
+  --color-text-muted: #7982a9;
+  --color-border: #414868;
+  --color-border-light: #414868;
+  --color-border-dark: #7dcfff;
   --color-hover-bg: #292e42;
-  --color-link: #7aa2f7;
+  --color-link: #7dcfff;
   --color-success: #9ece6a;
-  --color-shadow: #3b4261;
+  --color-shadow: #414868;
 }
+/* Dark mode: make icons, buttons, and tabs pop */
+[data-theme='dark'] .icon-glyph { color: #bb9af7; }
+[data-theme='dark'] .icon-name { color: #c0caf5; }
+[data-theme='dark'] .header-btn { border-color: #414868 !important; background: #24283b !important; color: #c0caf5 !important; box-shadow: 2px 2px 0 #414868; }
+[data-theme='dark'] .style-tab { border-color: #414868 !important; background: #24283b !important; color: #c0caf5 !important; box-shadow: 2px 2px 0 #414868; }
+[data-theme='dark'] .style-tab.active { border-color: #7dcfff !important; background: #1f2335 !important; color: #7dcfff !important; box-shadow: 2px 2px 0 #7dcfff; }
+[data-theme='dark'] .search-bar { border-color: #7dcfff; background: #1f2335; }
+[data-theme='dark'] .search-input { color: #dce0f8; }
+[data-theme='dark'] .smart-toggle.active { color: #bb9af7; }
+[data-theme='dark'] .badge-count { background: #292e42; color: #c0caf5; border-color: #414868; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -318,9 +328,11 @@ body {
   background: var(--color-bg-alt);
   border: 1px solid var(--color-border);
   padding: var(--spacing-sm) var(--spacing-md);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   overflow-x: auto;
-  white-space: pre;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 /* === UNIVERSAL BADGE === */
@@ -371,16 +383,19 @@ body {
   margin: var(--spacing-md) auto 0;
   padding: 0 var(--spacing-xl);
 }
+.tabs-scroll-caret { display: none; }
 
 .style-tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  flex-wrap: nowrap;
+  gap: 0;
   padding-bottom: var(--spacing-sm);
   border-bottom: 2px solid var(--color-border-dark);
+  justify-content: stretch;
 }
 
 .style-tab {
+  flex: 1 1 0;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 600;
@@ -393,6 +408,8 @@ body {
   letter-spacing: 0.03em;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  text-align: center;
   gap: 5px;
   white-space: nowrap;
 }
@@ -553,17 +570,81 @@ body {
   min-height: 0;
 }
 
-.grid-status {
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
-  margin-bottom: var(--spacing-sm);
-  padding-top: var(--spacing-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+.grid-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
   position: sticky;
   top: 0;
   background: var(--color-bg);
   z-index: 1;
+  padding-top: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.grid-status {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+/* Search strategy live indicator */
+.search-strategy {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--color-text-muted);
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.search-strategy .step {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  opacity: 0.4;
+  transition: opacity 0.2s;
+}
+.search-strategy .step.active {
+  opacity: 1;
+  color: var(--color-text);
+}
+.search-strategy .step.active .step-dot { background: var(--highlight-color); }
+.step-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--color-border);
+  display: inline-block;
+}
+.step-label { text-transform: uppercase; letter-spacing: 0.03em; }
+.step-detail { color: var(--color-text-muted); }
+
+/* Toast notification */
+.search-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 8px 16px;
+  background: var(--color-text);
+  color: var(--color-bg);
+  border: 2px solid var(--color-border-dark);
+  box-shadow: 3px 3px 0 var(--color-shadow);
+  z-index: 9999;
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.search-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
 }
 
 .icon-grid {
@@ -808,6 +889,8 @@ body {
 
 .detail-body {
   padding: var(--spacing-lg);
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 .detail-section {
@@ -860,6 +943,7 @@ body {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.75rem;
+  word-break: break-word;
 }
 
 .meta-table td {
@@ -950,8 +1034,8 @@ body {
 
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
-  html { overflow-x: hidden; }
-  .fixed-top { display: flex; flex-direction: column; }
+  body { max-width: 100vw; }
+  .fixed-top { display: flex; flex-direction: column; overflow: visible; }
   .site-header   { order: 1; }
   .narrative     { order: 4; display: none; }
   .tabs-container { order: 2; }
@@ -1003,102 +1087,132 @@ body {
     order: 1;
   }
 
-  /* Tabs: horizontal scroll with fade caret hint */
-  .tabs-container { padding: 0 var(--spacing-md); position: relative; }
+  /* Tabs: horizontal swipe scroll, one line */
+  .tabs-container {
+    padding: var(--spacing-sm) var(--spacing-md);
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
   .style-tabs {
-    overflow-x: auto;
+    display: flex;
     flex-wrap: nowrap;
+    overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding-bottom: var(--spacing-sm);
-    scroll-snap-type: x proximity;
     gap: 4px;
+    padding: 2px 0;
+    border-bottom: none;
+    touch-action: pan-x;
+    -ms-overflow-style: none;
   }
   .style-tabs::-webkit-scrollbar { display: none; }
   .style-tab {
-    scroll-snap-align: start;
-    flex-shrink: 0;
+    flex: 0 0 auto !important;
     font-size: 0.65rem;
     padding: 0.25rem 0.5rem;
+    white-space: nowrap;
   }
-  .tabs-container::after {
-    content: '\f105';
-    font-family: 'Font Awesome 6 Pro';
-    font-weight: 100;
-    position: absolute;
-    right: var(--spacing-md);
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1rem;
-    color: var(--color-text-muted);
-    pointer-events: none;
-    opacity: 0.6;
-    z-index: 2;
-  }
-  .tabs-container.scrolled-end::after { display: none; }
+  .tabs-scroll-caret { display: none; }
 
-  /* Search: lightbox with padding */
+  /* Search: clean input row, buttons below matching header-btn */
   .search-container { padding: 0 var(--spacing-md); }
   .search-bar {
     flex-wrap: wrap;
-    background: var(--color-bg-alt);
-    border: 2px solid var(--color-border-dark);
-    padding: var(--spacing-xs);
-    gap: var(--spacing-xs);
+    background: none;
+    border: none;
+    padding: 0;
+    gap: 4px;
+    box-sizing: border-box;
+    width: 100%;
+    box-shadow: none;
   }
-  /* Row 1: search icon + input (full width) */
+  /* Row 1: magnifying glass + input (full width, no border) */
   .search-icon {
-    padding: var(--spacing-xs);
+    padding: 8px;
     flex: 0 0 auto;
+    order: -2;
+    border: none;
+    background: none;
+    color: var(--color-text-muted);
   }
   .search-input {
-    flex: 1 1 100%;
+    flex: 1 1 0;
     min-width: 0;
-    border-bottom: 1px solid var(--color-border);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 16px; /* prevents iOS auto-zoom on focus */
-    order: -1;
-  }
-  .search-icon { order: -2; }
-  /* Show / hint as a small badge on mobile */
-  .search-hint {
-    display: inline-flex;
-    align-items: center;
-    order: -1;
     border: none;
     border-bottom: 1px solid var(--color-border);
-    padding: var(--spacing-xs) 4px;
-    flex: 0 0 auto;
+    padding: 8px 8px 8px 0;
+    font-size: 16px; /* prevents iOS auto-zoom */
+    order: -1;
+    background: none;
   }
-  .search-hint .hint-text { display: none; }
-  /* Row 2: uniform badge controls */
+  /* Row 2: ALL buttons uniform -- same size/style as header-btn */
+  .search-hint,
   .smart-toggle,
   .color-section,
   .random-duo-btn {
-    border: 1px solid var(--color-border);
-    border-left: 1px solid var(--color-border);
+    border: 1px solid var(--color-border-light);
     background: var(--color-bg-secondary);
+    color: var(--color-text-muted);
     flex: 1 1 0;
     min-width: 0;
+    height: 28px;
     justify-content: center;
     text-align: center;
-    padding: 0.3rem 0.4rem;
-    font-size: 0.6rem;
+    padding: 0 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
     gap: 3px;
     display: inline-flex;
     align-items: center;
+    box-shadow: none;
+    box-sizing: border-box;
   }
+  .search-hint { order: 0; }
+  .search-hint .hint-text { display: none; }
+  .color-section label { font-size: 0.65rem; font-weight: 600; margin: 0; }
+  .color-pick { width: 16px; height: 16px; padding: 0; border: 1px solid var(--color-border); }
+  /* Force row break after input row */
+  .search-bar::after {
+    content: '';
+    width: 100%;
+    order: -1;
+  }
+  /* Copy button: floating icon, no border box */
+  .icon-card .card-copy {
+    border: none;
+    background: none;
+    box-shadow: none;
+    padding: 4px;
+  }
+  .icon-card .card-copy:hover {
+    border: none;
+    background: none;
+  }
+
+  /* Status + strategy: stacked on mobile */
+  .grid-status-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .search-strategy { justify-content: flex-start; font-size: 0.6rem; gap: var(--spacing-sm); }
 
   .grid-container { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
   /* 4-column grid on mobile */
   .icon-grid { grid-template-columns: repeat(4, 1fr); gap: 4px; }
   .icon-glyph { font-size: 1.5rem; height: 1.75rem; }
 
-  /* Detail: styles on 2 rows, auto 2x zoom */
-  .detail-panel { width: 95vw; max-height: 90vh; margin: 0 auto; }
+  /* Detail: no horizontal scroll, fit to screen */
+  .detail-panel { width: 95vw; max-height: 90vh; margin: 0 auto; overflow-x: hidden; }
+  .detail-body { padding: var(--spacing-md); }
+  .meta-table { font-size: 0.65rem; }
+  .meta-table td { padding: 3px 4px; }
+  .code-block { font-size: 0.65rem; padding: var(--spacing-xs) var(--spacing-sm); }
   .style-strip {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -1128,7 +1242,7 @@ body {
   .site-title-main { font-size: 1rem; }
 }
 </style>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" defer></script>
+<script src="/downloaded/confetti/confetti.browser.min.js" defer></script>
 </head>
 <body>
 
@@ -1185,13 +1299,14 @@ body {
   <div class="style-tabs" id="style-tabs">
     <!-- Populated by JS -->
   </div>
+  <button class="tabs-scroll-caret" id="tabs-scroll-caret" aria-label="Scroll tabs"><i class="fa-thin fa-chevron-right"></i></button>
 </div>
 
 <!-- SEARCH -->
 <div class="search-container">
   <div class="search-bar">
     <span class="search-icon"><i class="fa-thin fa-magnifying-glass"></i></span>
-    <input type="text" class="search-input" id="search-input" placeholder="Search 3,860 icons..." oninput="filterIcons()">
+    <input type="text" class="search-input" id="search-input" placeholder="e.g. cat, hippo, spinning loader, nav menu..." oninput="filterIcons()">
     <span class="search-hint" title="Press / to focus search, then type your keyword, term, or concept. Works from anywhere on the page."><kbd>/</kbd> <span class="hint-text">Focus search</span></span>
     <button class="smart-toggle" id="smart-toggle" onclick="toggleSmart()" title="Smart mode (on by default): combines FTS5 keyword/prefix matching with all-MiniLM-L6-v2 semantic embeddings. Finds icons by exact name AND by concept. Disable for keyword-only search.">
       <i class="fa-thin fa-brain"></i> Smart
@@ -1214,17 +1329,30 @@ body {
 </div>
 </div><!-- end .fixed-top -->
 
-<!-- INTRO POPUP (mobile, shown on first visit) -->
+<!-- Search toast -->
+<div class="search-toast" id="search-toast"></div>
+
+<!-- INTRO POPUP (shown on first visit until dismissed) -->
 <div class="intro-popup-overlay" id="intro-popup">
   <div class="intro-popup-panel">
     <button class="intro-popup-close" onclick="dismissIntro()" title="Close"><i class="fa-thin fa-xmark"></i></button>
     <div id="intro-popup-content"></div>
+    <div style="margin-top:var(--spacing-md);text-align:center;">
+      <button onclick="dismissIntro()" style="font-family:var(--font-mono);font-size:0.7rem;font-weight:700;padding:6px 16px;border:2px solid var(--color-border-dark);background:var(--color-bg-alt);color:var(--color-text);cursor:pointer;text-transform:uppercase;letter-spacing:0.03em;">Don't show again</button>
+    </div>
   </div>
 </div>
 
 <!-- ICON GRID (scrollable) -->
 <div class="grid-container" id="grid-container">
-  <div class="grid-status" id="grid-status">Loading 3,860 icons...</div>
+  <div class="grid-status-row">
+    <div class="grid-status" id="grid-status">Loading 3,860 icons...</div>
+    <div class="search-strategy" id="search-strategy" style="display:none;">
+      <span class="step" id="step-fts"><span class="step-dot"></span> <span class="step-label">FTS5</span> <span class="step-detail" id="step-fts-detail">&lt;1ms</span></span>
+      <span class="step" id="step-embed"><span class="step-dot"></span> <span class="step-label">Embedding</span> <span class="step-detail" id="step-embed-detail">standby</span></span>
+      <span class="step" id="step-fusion"><span class="step-dot"></span> <span class="step-label">Fusion</span> <span class="step-detail" id="step-fusion-detail">0.7 FTS + 0.3 cos</span></span>
+    </div>
+  </div>
   <div class="icon-grid" id="icon-grid"></div>
 </div>
 
@@ -1255,7 +1383,8 @@ body {
         <div style="display:flex;align-items:center;gap:8px;">
           <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.03em;color:var(--color-text-muted);display:flex;align-items:center;gap:4px;">Color <input type="color" id="detail-color" value="#4a6fa5" oninput="updateDetailColors()" style="width:28px;height:22px;border:1px solid var(--color-border);padding:0;cursor:pointer;"></label>
           <label style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.03em;color:var(--color-text-muted);display:flex;align-items:center;gap:4px;">Duo <input type="color" id="detail-duo" value="#8badd4" oninput="updateDetailColors(true)" style="width:28px;height:22px;border:1px solid var(--color-border);padding:0;cursor:pointer;"></label>
-          <button onclick="randomizeDetailColors()" style="font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.03em;background:none;border:1px solid var(--color-border);padding:2px 8px;cursor:pointer;color:var(--color-text-muted);" title="Randomize colors"><i class="fa-thin fa-shuffle"></i></button>
+          <button id="detail-random-btn" onclick="randomizeDetailColors()" style="font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.03em;background:none;border:1px solid var(--color-border);padding:2px 8px;cursor:pointer;color:var(--color-text-muted);" title="Tap: random color. Long-press: cycle colors"><i class="fa-thin fa-shuffle"></i></button>
+          <button id="detail-cycle-btn" onclick="toggleDetailCycle()" style="font-family:var(--font-mono);font-size:0.7rem;text-transform:uppercase;letter-spacing:0.03em;background:none;border:1px solid var(--color-border);padding:2px 8px;cursor:pointer;color:var(--color-text-muted);" title="Toggle color cycling"><i class="fa-thin fa-palette"></i></button>
         </div>
       </div>
       <div class="style-strip" id="detail-styles"></div>
@@ -1436,11 +1565,16 @@ body {
       <div class="detail-section">
         <h4><i class="fa-thin fa-lightbulb"></i> Recommendations</h4>
         <div style="font-size:0.8rem;line-height:1.6;">
-          1. <strong>FTS5 is the primary search method</strong> -- sub-millisecond latency, excellent for exact/prefix matches<br>
-          2. <strong>Embedding search excels at conceptual queries</strong> -- "social media" finds brand icons, "spinning loader" finds spinner variants<br>
-          3. <strong>Hybrid strategy:</strong> Run FTS5 first on every keystroke; if &lt; 10 results, trigger embedding fallback<br>
-          4. <strong>Score fusion:</strong> <code>final = 0.7 * fts5_normalized + 0.3 * cosine_similarity</code><br>
-          5. <strong>Unicode shortcut:</strong> Direct lookup when query matches <code>/^[0-9a-f]{4,5}$/i</code>
+          1. <strong>FTS5 is the primary search method:</strong><br>
+          &nbsp;&nbsp;&nbsp;Sub-millisecond latency, excellent for exact/prefix matches<br><br>
+          2. <strong>Embedding search excels at conceptual queries:</strong><br>
+          &nbsp;&nbsp;&nbsp;"social media" finds brand icons, "spinning loader" finds spinner variants<br><br>
+          3. <strong>Hybrid strategy:</strong><br>
+          &nbsp;&nbsp;&nbsp;Run FTS5 first on every keystroke; if &lt; 10 results, trigger embedding fallback<br><br>
+          4. <strong>Score fusion:</strong><br>
+          &nbsp;&nbsp;&nbsp;<code>final = 0.7 * fts5_normalized + 0.3 * cosine_similarity</code><br><br>
+          5. <strong>Unicode shortcut:</strong><br>
+          &nbsp;&nbsp;&nbsp;Direct lookup when query matches <code>/^[0-9a-f]{4,5}$/i</code>
         </div>
       </div>
 
@@ -1485,11 +1619,22 @@ Brands:   &lt;i class="fa-brands fa-github"&gt;&lt;/i&gt;</div>
 
       <div class="detail-section">
         <h4><i class="fa-thin fa-table"></i> Database Schema</h4>
-        <div class="code-block">icons          3,860 rows  (name, label, unicode, search_terms, aliases, categories, tier)
-icon_styles   30,112 rows  (family, style, svg_path, svg_viewbox, svg_width, svg_height)
-icons_fts      FTS5 virtual table (name, label, search_terms, aliases, categories)
-icon_embeddings 3,860 rows  (384-dim float32 blobs, all-MiniLM-L6-v2)
-sources         2 rows  (pro-6.5.1, free-7.2.0)</div>
+        <div class="code-block">icons.db
+&#9500;&#9472; icons (3,860 rows)
+&#9474;  name, label, unicode,
+&#9474;  search_terms, aliases,
+&#9474;  categories, tier
+&#9500;&#9472; icon_styles (30,112 rows)
+&#9474;  family, style, svg_path,
+&#9474;  svg_viewbox, width, height
+&#9500;&#9472; icons_fts (FTS5 virtual)
+&#9474;  name, label, search_terms,
+&#9474;  aliases, categories
+&#9500;&#9472; icon_embeddings (3,860)
+&#9474;  384-dim float32 blobs
+&#9474;  all-MiniLM-L6-v2
+&#9492;&#9472; sources (2 rows)
+   pro-6.5.1, free-7.2.0</div>
       </div>
 
       <div class="detail-section">
@@ -1534,10 +1679,18 @@ sources         2 rows  (pro-6.5.1, free-7.2.0)</div>
 
       <div class="detail-section">
         <h4><i class="fa-thin fa-arrows-split-up-and-left"></i> Hybrid Strategy</h4>
-        <div class="code-block">1. FTS5 on every keystroke (&lt;1ms, always available)
-2. If FTS5 returns &lt;10 results, trigger embedding fallback
-3. Score fusion: final = 0.7 * fts5_normalized + 0.3 * cosine_similarity
-4. Unicode shortcut: direct lookup when query matches /^[0-9a-f]{4,5}$/i</div>
+        <p style="font-size:0.8rem;margin-bottom:var(--spacing-sm);color:var(--color-text-muted);">Every keystroke triggers FTS5 first. When keyword results are sparse, semantic embeddings fill the gap.</p>
+        <div class="code-block">1. FTS5 keyword search
+   &lt;1ms, runs on every keystroke
+
+2. Embedding fallback
+   Triggers when FTS5 &lt; 10 results
+
+3. Score fusion
+   0.7 &times; FTS5 + 0.3 &times; cosine
+
+4. Unicode shortcut
+   Direct lookup for /^[0-9a-f]{4,5}$/i</div>
       </div>
 
       <div class="detail-section">
@@ -1811,16 +1964,25 @@ function checkShowIntro() {
 }
 checkShowIntro();
 
-// Tabs scroll caret: hide when scrolled to end
+// Tabs scroll caret: hide when scrolled to end, tap to scroll
 (function() {
   const tabsEl = document.querySelector('.style-tabs');
   const container = document.querySelector('.tabs-container');
+  const caret = document.getElementById('tabs-scroll-caret');
   if (!tabsEl || !container) return;
   function checkScroll() {
     const atEnd = tabsEl.scrollLeft + tabsEl.clientWidth >= tabsEl.scrollWidth - 10;
     container.classList.toggle('scrolled-end', atEnd);
   }
   tabsEl.addEventListener('scroll', checkScroll, { passive: true });
+  if (caret) {
+    caret.addEventListener('click', () => {
+      tabsEl.scrollBy({ left: 150, behavior: 'smooth' });
+      haptic('pulse');
+    });
+  }
+  // Add scroll-behavior for smooth momentum
+  tabsEl.style.scrollBehavior = 'smooth';
   checkScroll();
 })();
 
@@ -1859,7 +2021,7 @@ function buildSearchIndex() {
       invertedIndex.get(token).add(icon.n);
     }
   }
-  console.log(`Search index: ${invertedIndex.size} tokens, ${iconSearchDocs.size} docs`);
+  // Search index built: invertedIndex.size tokens, iconSearchDocs.size docs
 }
 
 function ftsSearch(query) {
@@ -1924,7 +2086,7 @@ async function loadEmbeddings() {
     const vectors = new Float32Array(vecBuf);
     const dims = vectors.length / names.length;
     embeddingData = { names, vectors, dims };
-    console.log(`Loaded ${names.length} embeddings (${dims} dims)`);
+    // Embeddings loaded: names.length x dims dimensions
   } catch (e) {
     console.error('Failed to load embeddings:', e);
   }
@@ -1940,14 +2102,20 @@ async function loadEmbedder() {
   if (embedder) return;
   const btn = document.getElementById('smart-toggle');
   const statusEl = document.getElementById('model-status');
+  // Suppress known transformers.js warnings (content-length, dtype)
+  const _origWarn = console.warn;
+  console.warn = (...args) => {
+    const msg = String(args[0] || '');
+    if (msg.includes('content-length') || msg.includes('dtype not specified')) return;
+    _origWarn.apply(console, args);
+  };
   try {
     if (statusEl) statusEl.textContent = 'Loading semantic model...';
     btn.innerHTML = '<i class="fa-thin fa-spinner fa-spin"></i> Smart';
 
-    // Race the dynamic import against a 15s timeout
-    // Note: browser may request transformers.min.js.map which returns 404 -- this is expected CDN behavior (source maps not published)
+    // Self-hosted transformers.js v3.4.1
     const timeoutMs = 15000;
-    const importPromise = import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.1');
+    const importPromise = import('/downloaded/transformers/transformers.min.js');
     const timeout = new Promise((_, reject) =>
       setTimeout(() => reject(new Error('CDN import timed out')), timeoutMs)
     );
@@ -1967,6 +2135,7 @@ async function loadEmbedder() {
     // Race model loading against a 60s timeout
     const pipelinePromise = pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
       quantized: true,
+      dtype: 'q8',
       progress_callback: (p) => {
         if (p.status === 'download') fromCache = false;
         if (p.status === 'progress' && statusEl) {
@@ -1995,6 +2164,7 @@ async function loadEmbedder() {
       setTimeout(() => reject(new Error('Model download timed out')), 60000)
     );
     embedder = await Promise.race([pipelinePromise, modelTimeout]);
+    console.warn = _origWarn; // Restore after model load
 
     const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
     btn.innerHTML = '<i class="fa-thin fa-brain"></i> Smart';
@@ -2006,8 +2176,9 @@ async function loadEmbedder() {
       btn.title = `Smart mode: semantic search via all-MiniLM-L6-v2 ONNX. Model downloaded and cached in ${elapsed}s.`;
       if (statusEl) statusEl.textContent = `Semantic model cached locally -- loaded in ${elapsed}s`;
     }
-    console.log(`Embedding model loaded in ${elapsed}s${cacheLabel}`);
+    // Embedding model loaded
   } catch (e) {
+    console.warn = _origWarn; // Restore on error
     console.error('Failed to load embedder:', e);
     btn.innerHTML = '<i class="fa-thin fa-brain"></i> Smart';
     if (statusEl) statusEl.textContent = 'Semantic model unavailable -- keyword search active';
@@ -2077,20 +2248,63 @@ function getFilteredIcons() {
   return filtered;
 }
 
+// Search result tracking
+let _lastFtsCount = 0;
+let _lastEmbCount = 0;
+
+// Toast notification
+function showSearchToast(msg) {
+  const toast = document.getElementById('search-toast');
+  if (!toast) return;
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Update strategy indicator steps
+function updateStrategy(step, ftsMs, ftsCount, embMs, embCount, fusedCount) {
+  const el = document.getElementById('search-strategy');
+  const stepFts = document.getElementById('step-fts');
+  const stepEmbed = document.getElementById('step-embed');
+  const stepFusion = document.getElementById('step-fusion');
+  if (!el) return;
+  el.style.display = 'flex';
+  stepFts.classList.toggle('active', step >= 1);
+  stepEmbed.classList.toggle('active', step >= 2);
+  stepFusion.classList.toggle('active', step >= 3);
+  if (step >= 1) document.getElementById('step-fts-detail').textContent = `${ftsMs}ms, ${ftsCount} hits`;
+  if (step >= 2) document.getElementById('step-embed-detail').textContent = embMs != null ? `${embMs}ms, ${embCount} hits` : 'standby';
+  if (step >= 3) document.getElementById('step-fusion-detail').textContent = `${fusedCount} fused`;
+}
+
 // Hybrid search: FTS first, embedding fallback
 async function hybridSearch(query) {
+  // Step 1: FTS5
+  const ftsStart = performance.now();
   const ftsResults = ftsSearch(query);
   const ftsFiltered = ftsResults || [];
+  const ftsMs = (performance.now() - ftsStart).toFixed(2);
+  _lastFtsCount = ftsFiltered.length;
+  _lastEmbCount = 0;
+  updateStrategy(1, ftsMs, ftsFiltered.length, null, 0, 0);
 
   if (!smartMode || !embeddingData || !embedder) {
     return ftsFiltered;
   }
 
-  // If FTS found enough results, blend; otherwise lean on embeddings
+  // Step 2: Embedding search
+  const embStart = performance.now();
   const embResults = await embeddingSearch(query, 200);
-  if (!embResults) return ftsFiltered;
+  const embMs = (performance.now() - embStart).toFixed(1);
+  if (!embResults) {
+    updateStrategy(2, ftsMs, ftsFiltered.length, embMs, 0, 0);
+    return ftsFiltered;
+  }
+  _lastEmbCount = embResults.length;
+  updateStrategy(2, ftsMs, ftsFiltered.length, embMs, embResults.length, 0);
 
-  // Score fusion: 0.7 * FTS rank + 0.3 * cosine
+  // Step 3: Score fusion: 0.7 * FTS rank + 0.3 * cosine
   const fusedScores = new Map();
   const maxFts = ftsFiltered.length;
   ftsFiltered.forEach((icon, idx) => {
@@ -2107,6 +2321,7 @@ async function hybridSearch(query) {
   const sorted = [...fusedScores.entries()].sort((a, b) => b[1] - a[1]);
   const nameOrder = sorted.map(s => s[0]);
   const nameSet = new Set(nameOrder);
+  updateStrategy(3, ftsMs, ftsFiltered.length, embMs, embResults.length, nameSet.size);
 
   // Apply tab filter
   let tabFiltered = allIcons;
@@ -2175,6 +2390,29 @@ function renderGrid() {
 
   // Re-apply random colors if active
   if (colorsRandom) randomizeDuo(true);
+
+  // Prefetch: trigger font loading for all style variants of visible icons
+  // so detail popup renders instantly when tapped
+  if (typeof requestIdleCallback === 'function') {
+    requestIdleCallback(() => {
+      const styles = new Set();
+      filtered.slice(0, 50).forEach(icon => {
+        icon.S.forEach(s => styles.add(s));
+      });
+      const prefetchEl = document.createElement('div');
+      prefetchEl.style.cssText = 'position:absolute;left:-9999px;top:-9999px;visibility:hidden;';
+      const families = { s:'fa-solid', r:'fa-regular', l:'fa-light', t:'fa-thin', d:'fa-duotone', ss:'fa-sharp fa-solid', sr:'fa-sharp fa-regular', sl:'fa-sharp fa-light', st:'fa-sharp fa-thin', b:'fa-brands' };
+      styles.forEach(s => {
+        if (families[s]) {
+          const i = document.createElement('i');
+          i.className = families[s] + ' fa-house';
+          prefetchEl.appendChild(i);
+        }
+      });
+      document.body.appendChild(prefetchEl);
+      setTimeout(() => prefetchEl.remove(), 2000);
+    });
+  }
 }
 
 // Event delegation for icon grid clicks
@@ -2208,6 +2446,12 @@ function filterIcons() {
   currentFilter = input.value.toLowerCase().trim();
   if (currentFilter) haptic('pulse');
 
+  // Hide strategy indicator when no search
+  if (!currentFilter) {
+    const stratEl = document.getElementById('search-strategy');
+    if (stratEl) stratEl.style.display = 'none';
+  }
+
   if (smartMode && currentFilter && embeddingData && embedder) {
     // Async hybrid search
     hybridSearch(currentFilter).then(results => {
@@ -2228,7 +2472,8 @@ function filterIcons() {
       const tabSet = new Set(tabFiltered.map(i => i.n));
       const filtered = results.filter(i => tabSet.has(i.n));
 
-      status.textContent = `Showing ${filtered.length.toLocaleString()} icons (hybrid)`;
+      status.textContent = `Showing ${filtered.length.toLocaleString()} icons -- ${_lastFtsCount} keyword + ${_lastEmbCount} semantic`;
+      showSearchToast(`${filtered.length} icons: ${_lastFtsCount} keyword + ${_lastEmbCount} semantic`);
       iconIndex.clear();
       filtered.forEach(icon => iconIndex.set(icon.n, icon));
 
@@ -2358,6 +2603,13 @@ function openDetail(icon) {
 
 function closeDetail() {
   document.getElementById('detail-overlay').classList.remove('open');
+  // Stop detail color cycling if active
+  if (_detailCycleInterval) {
+    clearInterval(_detailCycleInterval);
+    _detailCycleInterval = null;
+    const btn = document.getElementById('detail-cycle-btn');
+    if (btn) btn.style.color = 'var(--color-text-muted)';
+  }
 }
 
 function toggleDetailZoom() {
@@ -2410,6 +2662,46 @@ function randomizeDetailColors() {
   document.getElementById('detail-duo').value = duo;
   applyDetailColors(primary, duo);
 }
+
+// Detail color cycling
+let _detailCycleInterval = null;
+let _detailCycleHue = 0;
+function toggleDetailCycle() {
+  const btn = document.getElementById('detail-cycle-btn');
+  if (_detailCycleInterval) {
+    clearInterval(_detailCycleInterval);
+    _detailCycleInterval = null;
+    btn.style.color = 'var(--color-text-muted)';
+    haptic('light');
+    return;
+  }
+  _detailCycleHue = Math.floor(Math.random() * 360);
+  btn.style.color = 'var(--accent-duotone)';
+  haptic('medium');
+  _detailCycleInterval = setInterval(() => {
+    _detailCycleHue = (_detailCycleHue + 5) % 360;
+    const primary = hslToHex(_detailCycleHue, 60, 45);
+    const duo = hslToHex(_detailCycleHue, 40, 70);
+    document.getElementById('detail-color').value = primary;
+    document.getElementById('detail-duo').value = duo;
+    applyDetailColors(primary, duo);
+  }, 30);
+}
+
+// Long-press on random button starts cycling
+(function() {
+  const btn = document.getElementById('detail-random-btn');
+  if (!btn) return;
+  let pressTimer = null;
+  btn.addEventListener('touchstart', (e) => {
+    pressTimer = setTimeout(() => { toggleDetailCycle(); pressTimer = 'fired'; }, 500);
+  }, { passive: true });
+  btn.addEventListener('touchend', () => {
+    if (pressTimer === 'fired') { /* long-press handled */ }
+    else { clearTimeout(pressTimer); }
+    pressTimer = null;
+  });
+})();
 
 function copyIcon(name, isBrand) {
   const prefix = isBrand ? 'fa-brands' : 'fa-solid';

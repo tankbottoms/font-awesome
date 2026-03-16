@@ -1,5 +1,44 @@
 # Changelog
 
+## 2026-03-16 (v1.3.0)
+
+### Added
+- **Mobile-first responsive layout** with swipeable horizontal tab strip, clean search bar, uniform button sizing
+- **Live search strategy indicator** showing FTS5/Embedding/Fusion steps with timing and hit counts
+- **Toast notifications** for hybrid search result breakdowns (keyword + semantic counts)
+- **Icon detail color cycling** with fast rainbow mode (30ms interval) and long-press toggle
+- **Font prefetching** after search results render for instant detail popup
+- **Self-hosted transformers.js** v3.4.1 (no CDN dependency) with source map
+- **Self-hosted canvas-confetti** (no CDN dependency)
+- **HuggingFace CORS proxy** error handling with 502 fallback responses
+- **Service worker v3** with graceful cross-origin fetch fallback
+- **Intro popup** (mobile only, dismissible via localStorage)
+- **Content Explorer Template** skill documenting the architecture for reuse
+
+### Changed
+- Desktop tabs equally spaced across full search bar width
+- Mobile tabs: single horizontal line with touch swipe scrolling
+- Mobile search: borderless input with header-btn-matched controls below
+- Mobile copy button: floating icon without border box
+- Dark mode contrast improvements (Tokyo Night palette)
+- Search placeholder updated with example queries
+- Benchmark recommendations reformatted with structured layout
+- Removed `table-layout: fixed` from meta-tables (fixes column overlap)
+- Viewport `maximum-scale=1.0` prevents iOS input zoom
+
+### Fixed
+- `_origWarn` ReferenceError (block scoping bug in try/catch)
+- Google Fonts 404 on API page (replaced with system monospace stack)
+- Font Awesome CSS 404 on API page (uses self-hosted assets)
+- `FetchEvent.respondWith` error on cross-origin fetches
+- Console warnings suppressed (content-length, dtype during model load)
+- Fathom analytics script removed (broken endpoint)
+
+### Removed
+- All external CDN dependencies at runtime (transformers.js, confetti, Google Fonts)
+- Debug console.log statements from production code
+- Dead `index.ts` placeholder file
+
 ## 2026-03-15 (v1.2.0)
 
 ### Added

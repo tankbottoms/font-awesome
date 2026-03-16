@@ -61,8 +61,8 @@ const iconMap = new Map<string, Icon>(icons.map(i => [i.n, i]));
 function corsHeaders(): Record<string, string> {
   return {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Range, X-Requested-With',
   };
 }
 
@@ -300,9 +300,8 @@ function handleDocs(): Response {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Font Awesome Explorer API</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-pro@6.5.1/css/all.min.css">
+<link rel="stylesheet" href="/downloaded/fontawesome-pro-6.5.1-web/css/all.min.css">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap');
   :root {
     --color-bg: #ffffff;
     --color-bg-secondary: #ffffff;
@@ -329,11 +328,11 @@ function handleDocs(): Response {
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: ui-monospace, 'SF Mono', 'Cascadia Code', 'Fira Mono', Menlo, Consolas, monospace;
     background: var(--color-bg); color: var(--color-text);
     padding: 2rem; line-height: 1.6;
   }
-  .container { max-width: 900px; margin: 0 auto; }
+  .container { max-width: 900px; margin: 0 auto; overflow-x: hidden; }
   h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
   h1 .version { font-size: 0.7rem; background: #d1fae5; border: 2px solid #a7f3d0; padding: 2px 8px; vertical-align: middle; }
   [data-theme='dark'] h1 .version { background: #1a3a2a; border-color: #2d5a3d; color: #9ece6a; }
@@ -356,25 +355,38 @@ function handleDocs(): Response {
   }
   [data-theme='dark'] .method-badge { background: #1a3a2a; border-color: #7aa2f7; color: #9ece6a; }
   .endpoint-path { font-weight: 600; font-size: 0.9rem; }
-  .param-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.8rem; }
-  .param-table th, .param-table td { border: 1px solid var(--color-border); padding: 4px 8px; text-align: left; }
+  .param-table { width: 100%; border-collapse: collapse; margin: 0.5rem 0; font-size: 0.8rem; table-layout: fixed; }
+  .param-table th, .param-table td { border: 1px solid var(--color-border); padding: 4px 8px; text-align: left; word-break: break-word; overflow-wrap: break-word; }
   .param-table th { background: var(--color-bg-alt); font-weight: 600; }
   .param-table .required { color: #dc2626; font-weight: 600; }
   [data-theme='dark'] .param-table .required { color: #f7768e; }
 
   .try-panel {
     background: var(--color-bg-alt); border: 2px solid var(--color-border); padding: 1rem; margin-top: 0.75rem;
+    position: relative; padding-bottom: 2.5rem;
   }
   .try-panel label { font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 0.25rem; }
   .try-panel input, .try-panel select {
-    font-family: inherit; font-size: 0.8rem; padding: 4px 8px;
+    font-family: inherit; font-size: 0.8rem; padding: 6px 10px;
     border: 2px solid var(--color-border-dark); background: var(--color-bg); color: var(--color-text);
     margin-bottom: 0.5rem; width: 100%; max-width: 300px;
+    border-radius: 0; -webkit-appearance: none; appearance: none;
+    box-shadow: 2px 2px 0 var(--color-border);
+    text-transform: uppercase; letter-spacing: 0.03em; font-weight: 600;
+  }
+  .try-panel select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 8px center; padding-right: 28px;
+    cursor: pointer;
+  }
+  .try-panel select:focus, .try-panel input:focus {
+    outline: none; border-color: var(--highlight-color); box-shadow: 3px 3px 0 var(--highlight-color);
   }
   .try-btn {
     font-family: inherit; font-size: 0.8rem; font-weight: 700; padding: 6px 16px;
     background: #e0f2fe; color: #0369a1; border: 2px solid #bae6fd; cursor: pointer;
     box-shadow: 2px 2px 0 #bae6fd;
+    position: absolute; bottom: 0.75rem; right: 0.75rem;
   }
   .try-btn:hover { background: #bae6fd; }
   [data-theme='dark'] .try-btn { background: #1a2a4a; color: #7aa2f7; border-color: #3b4261; box-shadow: 2px 2px 0 #3b4261; }
@@ -389,6 +401,7 @@ function handleDocs(): Response {
   .skill-section {
     background: #ede9fe; border: 2px solid var(--color-border-dark); padding: 1.25rem; margin: 1.5rem 0;
     box-shadow: 3px 3px 0 var(--color-border);
+    position: relative; padding-bottom: 3rem;
   }
   [data-theme='dark'] .skill-section { background: #2a2040; }
   .skill-section h3 { margin-top: 0; }
@@ -408,7 +421,8 @@ function handleDocs(): Response {
   .download-btn {
     display: inline-block; font-family: inherit; font-size: 0.85rem; font-weight: 700;
     padding: 8px 20px; background: #ede9fe; color: #5b21b6; border: 2px solid #ddd6fe;
-    text-decoration: none; box-shadow: 2px 2px 0 #ddd6fe; margin-top: 0.5rem;
+    text-decoration: none; box-shadow: 2px 2px 0 #ddd6fe;
+    position: absolute; bottom: 0.75rem; right: 0.75rem;
   }
   .download-btn:hover { background: #ddd6fe; }
   [data-theme='dark'] .download-btn { background: #2a2040; color: #bb9af7; border-color: #3b4261; box-shadow: 2px 2px 0 #3b4261; }
@@ -418,7 +432,9 @@ function handleDocs(): Response {
   .back-link { display: inline-flex; align-items: center; gap: 5px; margin-bottom: 1rem; font-size: 0.75rem; font-weight: 600; padding: 0.35rem 0.65rem; border: 1px solid var(--color-border); background: var(--color-bg-alt); color: var(--color-text); text-decoration: none; text-transform: uppercase; letter-spacing: 0.03em; font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace; }
   .back-link:hover { background: var(--color-hover-bg); border-color: #000; }
   .schema-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-  .schema-table th, .schema-table td { border: 1px solid var(--color-border); padding: 4px 8px; text-align: left; }
+  .schema-table th, .schema-table td { border: 1px solid var(--color-border); padding: 4px 8px; text-align: left; word-break: break-word; overflow-wrap: break-word; }
+  .schema-table th:nth-child(1), .schema-table td:nth-child(1) { width: 80px; white-space: nowrap; }
+  .schema-table th:nth-child(2), .schema-table td:nth-child(2) { width: 70px; white-space: nowrap; }
   .schema-table th { background: var(--color-bg-alt); }
   .info-bar { background: #e0f2fe; border: 2px solid var(--color-border-dark); padding: 0.75rem; margin: 1rem 0; font-size: 0.8rem; }
   [data-theme='dark'] .info-bar { background: #1a2a4a; }
@@ -690,13 +706,24 @@ async function handleHfProxy(url: URL, request: Request): Promise<Response> {
   if (!hfPath) return jsonResponse({ error: 'Missing path' }, 400);
 
   const hfUrl = `https://huggingface.co/${hfPath}`;
-  const resp = await fetch(hfUrl, { redirect: 'follow' });
-  const headers = new Headers(resp.headers);
-  headers.set('Access-Control-Allow-Origin', '*');
-  headers.set('Access-Control-Expose-Headers', '*');
-  headers.set('Cache-Control', 'public, max-age=604800, immutable');
+  try {
+    const resp = await fetch(hfUrl, {
+      method: request.method,
+      redirect: 'follow',
+      headers: { 'User-Agent': 'FontAwesome-Explorer/1.0' },
+    });
+    const headers = new Headers(resp.headers);
+    headers.set('Access-Control-Allow-Origin', '*');
+    headers.set('Access-Control-Expose-Headers', 'Content-Length, Content-Type, Content-Range');
+    headers.set('Cache-Control', 'public, max-age=604800, immutable');
 
-  return new Response(resp.body, { status: resp.status, headers });
+    return new Response(resp.body, { status: resp.status, headers });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: 'HF proxy fetch failed', detail: String(e) }), {
+      status: 502,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders() },
+    });
+  }
 }
 
 export default {
