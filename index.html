@@ -1011,8 +1011,16 @@ body {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding-bottom: var(--spacing-sm);
+    scroll-snap-type: x proximity;
+    gap: 4px;
   }
   .style-tabs::-webkit-scrollbar { display: none; }
+  .style-tab {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.5rem;
+  }
   .tabs-container::after {
     content: '\f105';
     font-family: 'Font Awesome 6 Pro';
@@ -1036,28 +1044,42 @@ body {
     background: var(--color-bg-alt);
     border: 2px solid var(--color-border-dark);
     padding: var(--spacing-xs);
-    gap: 0;
+    gap: var(--spacing-xs);
   }
-  /* Top row: magnifying glass + input */
-  .search-icon { padding: var(--spacing-xs); }
-  .search-input {
-    flex: 1 1 0;
-    min-width: 0;
-    border-bottom: none;
+  /* Row 1: search icon + input (full width) */
+  .search-icon {
     padding: var(--spacing-xs);
-    font-size: 0.85rem;
+    flex: 0 0 auto;
   }
+  .search-input {
+    flex: 1 1 100%;
+    min-width: 0;
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.85rem;
+    order: -1;
+  }
+  .search-icon { order: -2; }
   .search-hint { display: none; }
-  /* Bottom row: controls spread evenly */
+  /* Row 2: uniform badge controls */
   .smart-toggle,
   .color-section,
   .random-duo-btn {
-    border-left: none;
-    border-top: 1px solid var(--color-border);
-    flex: 1 1 auto;
+    border: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border);
+    background: var(--color-bg-secondary);
+    flex: 1 1 0;
+    min-width: 0;
     justify-content: center;
     text-align: center;
-    padding: var(--spacing-xs) 2px;
+    padding: 0.3rem 0.4rem;
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    gap: 3px;
+    display: inline-flex;
+    align-items: center;
   }
 
   .grid-container { padding-left: var(--spacing-md); padding-right: var(--spacing-md); }
@@ -1628,8 +1650,18 @@ function hapticPulse(presetName, intervalMs) {
 // ================================================================
 // CONFETTI ENGINE (canvas-confetti via CDN)
 // ================================================================
-let _confettiTimers = [], _emojiShapes = null;
+let _confettiTimers = [], _emojiShapes = null, _confettiInstance = null;
 const _confettiColors = ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#ff922b', '#cc5de8', '#20c997', '#ff6b9d'];
+
+function getConfetti() {
+  if (_confettiInstance) return _confettiInstance;
+  if (typeof confetti === 'undefined') return null;
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999;';
+  document.body.appendChild(canvas);
+  _confettiInstance = confetti.create(canvas, { resize: true });
+  return _confettiInstance;
+}
 
 function getEmojiShapes() {
   if (_emojiShapes) return _emojiShapes;
@@ -1642,15 +1674,16 @@ function getEmojiShapes() {
 }
 
 function shootConfetti(durationMs) {
-  if (typeof confetti === 'undefined') return;
+  const fire = getConfetti();
+  if (!fire) return;
   _confettiTimers.forEach(t => { clearInterval(t); clearTimeout(t); });
   _confettiTimers = [];
   const dur = durationMs || 3000;
   const start = Date.now();
   const t1 = setInterval(() => {
     if (Date.now() - start > dur) { clearInterval(t1); return; }
-    confetti({ particleCount: 10, angle: 55, spread: 60, startVelocity: 50, origin: { x: 0, y: 0.65 }, colors: _confettiColors, ticks: 200, gravity: 0.8, scalar: 1.1 });
-    confetti({ particleCount: 10, angle: 125, spread: 60, startVelocity: 50, origin: { x: 1, y: 0.65 }, colors: _confettiColors, ticks: 200, gravity: 0.8, scalar: 1.1 });
+    fire({ particleCount: 10, angle: 55, spread: 60, startVelocity: 50, origin: { x: 0, y: 0.65 }, colors: _confettiColors, ticks: 200, gravity: 0.8, scalar: 1.1 });
+    fire({ particleCount: 10, angle: 125, spread: 60, startVelocity: 50, origin: { x: 1, y: 0.65 }, colors: _confettiColors, ticks: 200, gravity: 0.8, scalar: 1.1 });
   }, 200);
   _confettiTimers.push(t1);
   const t2 = setTimeout(() => {
@@ -1658,7 +1691,7 @@ function shootConfetti(durationMs) {
     if (!shapes) return;
     const t3 = setInterval(() => {
       if (Date.now() - start > dur) { clearInterval(t3); return; }
-      confetti({ particleCount: 2, angle: 90, spread: 80, startVelocity: 35, origin: { x: 0.5, y: 1 }, shapes: [shapes.sparkle, shapes.party], scalar: 3.5, ticks: 200, gravity: 0.5, flat: true });
+      fire({ particleCount: 2, angle: 90, spread: 80, startVelocity: 35, origin: { x: 0.5, y: 1 }, shapes: [shapes.sparkle, shapes.party], scalar: 3.5, ticks: 200, gravity: 0.5, flat: true });
     }, 300);
     _confettiTimers.push(t3);
   }, dur * 0.5);
