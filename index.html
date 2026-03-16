@@ -1532,51 +1532,65 @@ function formatBytes(bytes) {
 
 async function loadEmbedder() {
   if (embedder) return;
+  const btn = document.getElementById('smart-toggle');
+  const statusEl = document.getElementById('model-status');
   try {
-    const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.1');
+    if (statusEl) statusEl.textContent = 'Loading semantic model...';
+    btn.innerHTML = '<i class="fa-thin fa-spinner fa-spin"></i> Smart';
+
+    // Race the dynamic import against a 15s timeout
+    const timeoutMs = 15000;
+    const importPromise = import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.4.1');
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('CDN import timed out')), timeoutMs)
+    );
+    const { pipeline, env } = await Promise.race([importPromise, timeout]);
+
     env.useBrowserCache = true;
     env.cacheDir = 'fa-explorer-models';
     env.allowLocalModels = false;
-    const btn = document.getElementById('smart-toggle');
-    const statusEl = document.getElementById('model-status');
-    btn.innerHTML = '<i class="fa-thin fa-spinner fa-spin"></i> Smart';
     let fromCache = true;
     const startTime = performance.now();
     let downloadStartTime = 0;
     let totalBytesDownloaded = 0;
     let totalBytesExpected = 0;
     const fileTotals = {};
-    if (statusEl) statusEl.textContent = 'Loading semantic model...';
-    embedder = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
+
+    // Race model loading against a 60s timeout
+    const pipelinePromise = pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2', {
       quantized: true,
       progress_callback: (p) => {
         if (p.status === 'download') fromCache = false;
         if (p.status === 'progress' && statusEl) {
           if (!downloadStartTime) downloadStartTime = performance.now();
-          // Track per-file totals to accumulate across chunks
           const fileKey = p.file || 'default';
           if (p.total) fileTotals[fileKey] = p.total;
-          // Recalculate totals from all files
           totalBytesExpected = Object.values(fileTotals).reduce((a, b) => a + b, 0);
           totalBytesDownloaded = 0;
           for (const k of Object.keys(fileTotals)) {
             if (k === fileKey) totalBytesDownloaded += (p.loaded || 0);
-            else totalBytesDownloaded += (fileTotals[k] || 0); // assume completed
+            else totalBytesDownloaded += (fileTotals[k] || 0);
           }
           const elapsedMs = performance.now() - downloadStartTime;
           const speed = elapsedMs > 100 ? totalBytesDownloaded / (elapsedMs / 1000) : 0;
           const remaining = speed > 0 ? Math.ceil((totalBytesExpected - totalBytesDownloaded) / speed) : 0;
           const eta = remaining > 0 ? ` -- ~${remaining}s remaining` : '';
           if (totalBytesExpected > 0) {
-            statusEl.textContent = `Downloading embedding model to local storage: ${formatBytes(totalBytesDownloaded)} / ${formatBytes(totalBytesExpected)}${eta}`;
+            statusEl.textContent = `Downloading embedding model: ${formatBytes(totalBytesDownloaded)} / ${formatBytes(totalBytesExpected)}${eta}`;
           } else {
             statusEl.textContent = `Loading model: ${(p.progress || 0).toFixed(0)}%`;
           }
         }
       }
     });
+    const modelTimeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Model download timed out')), 60000)
+    );
+    embedder = await Promise.race([pipelinePromise, modelTimeout]);
+
     const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
     btn.innerHTML = '<i class="fa-thin fa-brain"></i> Smart';
+    const cacheLabel = fromCache ? ' (from cache)' : ' (downloaded)';
     if (fromCache) {
       btn.title = `Smart mode: semantic search via all-MiniLM-L6-v2 ONNX. Model loaded from cache in ${elapsed}s.`;
       if (statusEl) statusEl.textContent = `Semantic model loaded from cache -- ${elapsed}s`;
@@ -1587,6 +1601,10 @@ async function loadEmbedder() {
     console.log(`Embedding model loaded in ${elapsed}s${cacheLabel}`);
   } catch (e) {
     console.error('Failed to load embedder:', e);
+    btn.innerHTML = '<i class="fa-thin fa-brain"></i> Smart';
+    if (statusEl) statusEl.textContent = 'Semantic model unavailable -- keyword search active';
+    smartMode = false;
+    btn.classList.remove('active');
   }
 }
 
