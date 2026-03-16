@@ -21,7 +21,9 @@ A neo-brutalist web application for browsing **3,860 icons** from Font Awesome P
 
 ## Demo
 
-https://github.com/tankbottoms/font-awesome/raw/main/static/videos/font-awesome-demo.mp4
+<p align="center" width="100%">
+<video src="https://rawcdn.githack.com/tankbottoms/font-awesome/9c15e25215be1d1f182fe60a96d4f756b28002a6/static/videos/font-awesome-demo.mp4" width="80%" controls></video>
+</p>
 
 ## API
 
